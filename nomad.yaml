@@ -6,7 +6,18 @@ plugins:
   # We only include our schema here. Without the explicit include, all plugins will be
   # loaded. Many build in plugins require more dependencies. Install nomad-lab[parsing]
   # to make all default plugins work.
-  include: 'schemas/example'
+  #include:
+  #options:
+  #  schemas/example:
+  #    python_package: mbe_IKZ
+  include:
+    - 'schemas/example'
+    - 'schemas/hall_IKZ'
+    - 'schemas/mbe_IKZ'
   options:
     schemas/example:
       python_package: nomadschemaexample
+    schemas/hall_IKZ:
+      python_package: hall_IKZ
+    schemas/mbe_IKZ:
+      python_package: mbe_IKZ

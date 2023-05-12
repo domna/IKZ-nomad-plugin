@@ -2,6 +2,25 @@
 
 ## Getting started
 
+your nomad.yaml in your installation should have this:
+```yaml
+keycloak:
+  realm_name: fairdi_nomad_test
+plugins:
+  # We only include our schema here. Without the explicit include, all plugins will be
+  # loaded. Many build in plugins require more dependencies. Install nomad-lab[parsing]
+  # to make all default plugins work.
+  include: 'schemas/nomadschemaxrd'
+  options:
+    schemas/nomadschemaxrd:
+      python_package: nomadschemaxrd
+```
+do not forget to export the package in the same terminal where you run NOMAD (`nomad admin run appworker`):
+```python
+export PYTHONPATH="$PYTHONPATH:/your/path/nomad-to/nomad-schema-plugin-x-ray-diffraction"
+```
+Use the path where you cloned this repo.
+
 ### Fork the project
 
 Go to the github project page https://github.com/nomad-coe/nomad-schema-plugin-example, hit
