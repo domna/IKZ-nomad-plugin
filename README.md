@@ -3,6 +3,7 @@
 ## Getting started
 
 your nomad.yaml in your installation should have this:
+
 ```yaml
 keycloak:
   realm_name: fairdi_nomad_test
@@ -15,10 +16,13 @@ plugins:
     schemas/nomadschemaxrd:
       python_package: nomadschemaxrd
 ```
+
 do not forget to export the package in the same terminal where you run NOMAD (`nomad admin run appworker`):
+
 ```python
 export PYTHONPATH="$PYTHONPATH:/your/path/nomad-to/nomad-schema-plugin-x-ray-diffraction"
 ```
+
 Use the path where you cloned this repo.
 
 ### Fork the project

@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 import numpy as np
-from nomad.metainfo import MSection, Quantity, SubSection, Section
+from nomad.metainfo import Quantity, SubSection, Section
+from nomad.datamodel.data import ArchiveSection
 
-
-class SystemParameters(MSection):
+class SystemParameters(ArchiveSection):
     '''Representation of an instrument'''
     hms_software_version = Quantity(
         type=str,
@@ -29,7 +29,7 @@ class SystemParameters(MSection):
         description='Working Directory')
 
 
-class MeasurementStateMachine(MSection):
+class MeasurementStateMachine(ArchiveSection):
     '''Representation of an instrument'''
     use_instruments = Quantity(
         type=bool,
@@ -87,7 +87,7 @@ class MeasurementStateMachine(MSection):
         Only for Keithley 2400 at IEEE address 24.')
 
 
-class Keithley(MSection):
+class Keithley(ArchiveSection):
     '''Representation of an instrument'''
     m_def = Section(a_eln=dict())
 
@@ -246,7 +246,7 @@ class Keithley2400(Keithley):
         will set current compliance to 100 mA.')
 
 
-class FieldController(MSection):
+class FieldController(ArchiveSection):
     '''Representation of an instrument'''
     gaussmeter = Quantity(
         type=str,
@@ -319,7 +319,7 @@ class FieldController(MSection):
         description='What is the maximum time to setpoint in minutes?')
 
 
-class TemperatureController(MSection):
+class TemperatureController(ArchiveSection):
     '''Representation of an instrument'''
     sample_sensor_type = Quantity(
         type=str,
@@ -348,7 +348,7 @@ class TemperatureController(MSection):
         True=[yes (default)]')
 
 
-class TemperatureDomain(MSection):
+class TemperatureDomain(ArchiveSection):
     '''Representation of an instrument'''
     temperature_low = Quantity(
         type=np.dtype(np.float64),
