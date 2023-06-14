@@ -2,19 +2,32 @@
 
 ## Getting started
 
-your nomad.yaml in your installation should have this:
+your nomad.yaml in your local installation should have this:
 
 ```yaml
 keycloak:
   realm_name: fairdi_nomad_test
+north:
+  hub_connect_ip: '172.17.0.1'
+normalize:
+  normalizers:
+    include:
+      - MetainfoNormalizer
 plugins:
-  # We only include our schema here. Without the explicit include, all plugins will be
-  # loaded. Many build in plugins require more dependencies. Install nomad-lab[parsing]
-  # to make all default plugins work.
-  include: 'schemas/nomadschemaxrd'
+  include:
+    - 'schemas/basesections_IKZ'
+    - 'schemas/hall_IKZ'
+    - 'schemas/mbe_IKZ'
+    - 'schemas/ds_ikz'
   options:
-    schemas/nomadschemaxrd:
-      python_package: nomadschemaxrd
+    schemas/basesections_IKZ:
+      python_package: basesections_IKZ
+    schemas/hall_IKZ:
+      python_package: hall_IKZ
+    schemas/mbe_IKZ:
+      python_package: mbe_IKZ
+    schemas/ds_IKZ:
+      python_package: ds_IKZ
 ```
 
 do not forget to export the package in the same terminal where you run NOMAD (`nomad admin run appworker`):
@@ -23,7 +36,7 @@ do not forget to export the package in the same terminal where you run NOMAD (`n
 export PYTHONPATH="$PYTHONPATH:/your/path/nomad-to/nomad-schema-plugin-x-ray-diffraction"
 ```
 
-Use the path where you cloned this repo.
+or to make this path persistent, write into the .pyenv/bin/activate file of your virtual env. Use the path of your local OS where you cloned this repo.
 
 ### Fork the project
 
