@@ -204,9 +204,12 @@ def parse_txt(fname: str, encoding: str = "iso-8859-1") -> dict:
     Returns:
         dict: Dict containing the data and metadata of the measurement
     """
-    def parse_measurement(line: str, current_section: str, current_measurement: str):
+    def parse_measurement(line_number: int, line: str, current_section: str, current_measurement: str):
         data = []
+        nested_line_number = 0
         for mline in fobj:
+            nested_line_number += 1
+            print(f"LINE {line_number + nested_line_number}: DATA. {mline}")
             if not mline.strip():
                 break
             data.append(list(map(lambda x: x.strip(), re.split("\t+", mline))))
@@ -218,46 +221,56 @@ def parse_txt(fname: str, encoding: str = "iso-8859-1") -> dict:
         template.update(helpers.pandas_df_to_template(
             dkey,
             pd.DataFrame(
-                np.array(data, dtype=np.float64), columns=header
+                #np.array(data, dtype=np.float64), columns=header # !! type check skipped
+                np.array(data), columns=header
             )
         ))
 
-        return current_section, current_measurement
+        return current_section, current_measurement, nested_line_number
 
-    def parse(line: str, current_section: str, current_measurement: str):
+    def parse(line_number: int, line: str, current_section: str, current_measurement: str):
         if helpers.is_section(line):
+            print(f"LINE {line_number}: SECTION. {line}")
             sline = line.strip()[1:-1]
             current_section = f"/{SECTION_REPLACEMENTS.get(sline, sline)}"
             current_measurement = ""
-            return current_section, current_measurement
+            return current_section, current_measurement, 0
 
         if helpers.is_measurement(line):
+            print(f"LINE {line_number}: MEASUREMENT. {line}")
             step, _, *meas = line.partition(":")
             sline = f"{step[6:]}_" + "".join(meas).strip()[:-1]
             current_measurement = f"/{MEASUREMENT_REPLACEMENTS.get(sline, sline)}"
-            return current_section, current_measurement
+            return current_section, current_measurement, 0
 
         if helpers.is_key(line):
+            print(f"LINE {line_number}: KEY. {line}")
             split_add_key(
                 fobj, template, f"{current_section}{current_measurement}", line
             )
-            return current_section, current_measurement
+            return current_section, current_measurement, 0
 
         if helpers.is_meas_header(line):
-            return parse_measurement(line, current_section, current_measurement)
+            print(f"LINE {line_number}: MEAS HEADER. {line}")
+            return parse_measurement(line_number, line, current_section, current_measurement)
 
+        print(f"LINE {line_number}: NO OTHER OPTION. {line}")
         if line.strip():
             logger.warning("Line `%s` ignored", line.strip())
 
-        return current_section, current_measurement
+        return current_section, current_measurement, 0
 
     template: Dict[str, Any] = {}
     current_section = "/entry"
     current_measurement = ""
     with open(fname, encoding=encoding) as fobj:
-        for line in fobj:
-            current_section, current_measurement = parse(
-                line, current_section, current_measurement
+        tot_line_number = 0
+        nested_line_number = 0
+        for line_number, line in enumerate(fobj, start=1):
+            tot_line_number = line_number + nested_line_number
+            current_section, current_measurement, nested_ln = parse(
+                tot_line_number, line, current_section, current_measurement
             )
+            nested_line_number += nested_ln
 
     return template

@@ -308,5 +308,13 @@ def convert_date(datestr: str, timezone: str = "Europe/Berlin") -> str:
             .isoformat()
         )
     except ValueError:
-        print("Warning: datestring does not conform to date format. Skipping.")
-        return datestr
+        try:
+            return (
+            datetime
+            .strptime(datestr, r'%d.%m.%Y %H%M%S')
+            .astimezone(pytz.timezone(timezone))
+            .isoformat()
+        )
+        except ValueError:
+            print("Warning: datestring does not conform to date format. Skipping.")
+            return datestr
