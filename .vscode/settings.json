@@ -31,10 +31,11 @@
         "**/node_modules": true
 
     },
-    "python.testing.pytestPath": ".pyenv/bin/pytest",
     "python.testing.pytestArgs": [
         "tests"
     ],
+    "python.envFile":"${workspaceFolder}/.env",
     "python.testing.unittestEnabled": false,
-    "jest.autoRun": "off"
+    "jest.autoRun": "off",
+    "python.testing.pytestEnabled": true
 }

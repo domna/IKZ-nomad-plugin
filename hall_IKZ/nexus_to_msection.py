@@ -15,10 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import numpy as np
 from typing import Generator, Tuple, Optional
 import re
 
-from . import hall_instrument 
+from . import hall_instrument
 
 from nomad.units import ureg
 
@@ -236,7 +237,7 @@ def get_measurements(data_template: dict) -> Generator[Measurement, None, None]:
                         setattr(
                             data_entries[data_index],
                             clean_dkey,
-                            data_template[key] * ureg(data_template[f'{key}/@units'])
+                            data_template[key].astype(np.float64) * ureg(data_template[f'{key}/@units'])
                         )
                     else:
                         setattr(data_entries[data_index], clean_dkey, data_template[key])
@@ -253,6 +254,8 @@ def get_measurements(data_template: dict) -> Generator[Measurement, None, None]:
                     data = data_template[key]
 
                     for column in data.columns:
+                        if (data[column] == 'ERROR').all():
+                            continue
                         col, unit = split_value_unit(column)
                         clean_col = col.lower().replace(' ', '_')
                         if hasattr(contact_sets[contact_set], clean_col):
@@ -260,7 +263,7 @@ def get_measurements(data_template: dict) -> Generator[Measurement, None, None]:
                                 setattr(
                                     contact_sets[contact_set],
                                     clean_col,
-                                    data[column] * ureg(unit)
+                                    data[column].astype(np.float64) * ureg(unit)
                                 )
                             else:
                                 setattr(
@@ -298,6 +301,8 @@ def get_measurements(data_template: dict) -> Generator[Measurement, None, None]:
                         data_template[key] * ureg(data_template[f'{key}/@units'])
                     )
                 elif unit is not None:
+                    if data_template[key] == 'ERROR':
+                        continue
                     setattr(
                         eln_measurement,
                         clean_key,

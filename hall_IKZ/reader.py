@@ -186,7 +186,9 @@ def split_add_key(fobj: Optional[TextIO], dic: dict, prefix: str, expr: str) -> 
             data.append(list(map(lambda x: x.strip(), re.split("\t+", line))))
 
         dkey = helpers.get_unique_dkey(dic, f"{prefix}/{key}/{jval}/data")
-        dic[dkey] = pd.DataFrame(np.array(data[1:], dtype=np.float64), columns=data[0])
+        dic[dkey] = pd.DataFrame(
+            np.array(data[1:]), columns=data[0]
+        ).apply(pd.to_numeric, args=('coerce',))
 
     if fobj is not None and key in MEASUREMENT_KEYS:
         parse_data()
@@ -223,7 +225,7 @@ def parse_txt(fname: str, encoding: str = "iso-8859-1") -> dict:
             pd.DataFrame(
                 #np.array(data, dtype=np.float64), columns=header # !! type check skipped
                 np.array(data), columns=header
-            )
+            ).apply(pd.to_numeric, args=('coerce',))
         ))
 
         return current_section, current_measurement, nested_line_number

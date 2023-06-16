@@ -301,20 +301,16 @@ def convert_date(datestr: str, timezone: str = "Europe/Berlin") -> str:
     """
 
     try:
-        return (
-            datetime
-            .strptime(datestr, r'%m/%d/%y %H%M%S')
-            .astimezone(pytz.timezone(timezone))
-            .isoformat()
-        )
+        for fmt in [r'%m/%d/%y %H%M%S', r'%d.%m.%Y %H%M%S', r'%d.%m.%Y %I%M%S %p']:
+            try:
+                return (
+                    datetime
+                    .strptime(datestr, fmt)
+                    .astimezone(pytz.timezone(timezone))
+                    .isoformat()
+                )
+            except ValueError:
+                pass
     except ValueError:
-        try:
-            return (
-            datetime
-            .strptime(datestr, r'%d.%m.%Y %H%M%S')
-            .astimezone(pytz.timezone(timezone))
-            .isoformat()
-        )
-        except ValueError:
-            print("Warning: datestring does not conform to date format. Skipping.")
-            return datestr
+        print("Warning: datestring does not conform to date format. Skipping.")
+        return datestr
